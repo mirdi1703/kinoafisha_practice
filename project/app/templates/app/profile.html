@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет — {{ request.user.username }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <header class="header">
+        <a href="{% url 'movie_list' %}" class="logo-link">
+            <div class="logo">
+                <span class="logo-badge">KINO</span> Киноафиша Ульяновск
+            </div>
+        </a>
+        <nav class="nav">
+            <a href="{% url 'movie_list' %}">Главная</a>
+            <a href="{% url 'movie_list' %}">Афиша</a>
+            <a href="{% url 'movies' %}">Расписание</a>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="active">Привет, {{ request.user.username }}</a>
+                <form action="{% url 'logout' %}" method="post" class="nav-logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-logout-btn">Выйти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Войти</a>
+                <a href="{% url 'register' %}">Регистрация</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="profile-header-box">
+            <div class="profile-header-top">
+                <div>
+                    <h1>Личный кабинет</h1>
+                    <p class="caption">Управление профилем, история бронирований и ваши отзывы</p>
+                </div>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Выйти из аккаунта</button>
+                </form>
+            </div>
+
+            <div class="profile-details-grid">
+                <div class="profile-detail-card">
+                    <span class="caption">Логин (никнейм)</span>
+                    <strong class="profile-detail-value">{{ request.user.username }}</strong>
+                </div>
+                <div class="profile-detail-card">
+                    <span class="caption">Электронная почта</span>
+                    <strong class="profile-detail-value">{{ request.user.email|default:"Не указана" }}</strong>
+                </div>
+                <div class="profile-detail-card">
+                    <span class="caption">Роль в системе</span>
+                    <strong class="profile-detail-value">{{ request.user.get_role_display }}</strong>
+                </div>
+                <div class="profile-detail-card">
+                    <span class="caption">Дата регистрации</span>
+                    <strong class="profile-detail-value">{{ request.user.date_joined|date:"d.m.Y" }}</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="profile-section">
+            <h2>История сеансов и бронирований ({{ bookings.count }})</h2>
+
+            {% if bookings %}
+                <div class="profile-list">
+                    {% for booking in bookings %}
+                        <article class="profile-item-card">
+                            <div class="profile-item-top">
+                                <div>
+                                    <h3>
+                                        <a href="{% url 'movie_detail' booking.session.movie.pk %}" class="profile-movie-link">
+                                            {{ booking.session.movie.title }}
+                                        </a>
+                                    </h3>
+                                    <p class="caption">
+                                        {{ booking.session.start_time|date:"d.m.Y в H:i" }} • Зал: {{ booking.session.hall.name }} ({{ booking.session.format }})
+                                    </p>
+                                </div>
+                                <span class="status-badge status-{{ booking.status }}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </div>
+
+                            <div class="profile-item-details">
+                                <p><strong>Код брони:</strong> {{ booking.booking_code }}</p>
+                                <p>
+                                    <strong>Места ({{ booking.seats_count }}):</strong>
+                                    {% for item in booking.items.all %}
+                                        Ряд {{ item.seat.row_number }}, место {{ item.seat.seat_number }}{% if not forloop.last %}; {% endif %}
+                                    {% empty %}
+                                        Не указаны
+                                    {% endfor %}
+                                </p>
+                                <p><strong>Сумма:</strong> {{ booking.total_amount }} руб.</p>
+                            </div>
+
+                            {% if booking.tickets.all %}
+                                <div class="profile-tickets">
+                                    {% for ticket in booking.tickets.all %}
+                                        <span class="genre-tag">
+                                            Билет #{{ ticket.id }} ({{ ticket.get_status_display }}) • QR: {{ ticket.qr_code }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="profile-empty-box">
+                    <p class="caption">У вас пока нет забронированных сеансов.</p>
+                    <a href="{% url 'movie_list' %}" class="btn btn-primary">Выбрать фильм</a>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="profile-section">
+            <h2>История ваших отзывов ({{ reviews.count }})</h2>
+
+            {% if reviews %}
+                <div class="profile-list">
+                    {% for review in reviews %}
+                        <article class="review-card">
+                            <div class="review-header">
+                                <div>
+                                    <strong>
+                                        <a href="{% url 'movie_detail' review.movie.pk %}" class="profile-movie-link">
+                                            {{ review.movie.title }}
+                                        </a>
+                                    </strong>
+                                    <span class="caption"> • {{ review.created_at|date:"d.m.Y H:i" }}</span>
+                                </div>
+                                <div class="profile-review-meta">
+                                    <span class="badge badge-rating">★ {{ review.rating }}/10</span>
+                                    <span class="status-badge status-{{ review.moderation_status }}">
+                                        {{ review.get_moderation_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                            <p>{{ review.text }}</p>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="profile-empty-box">
+                    <p class="caption">Вы ещё не оставляли отзывов на фильмы.</p>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
+    </footer>
+
+</body>
+</html>

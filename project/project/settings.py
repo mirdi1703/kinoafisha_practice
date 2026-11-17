@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'app',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +126,9 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+
+AUTH_USER_MODEL = 'app.User'
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'profile'  # Или 'movie_list', если хотите переходить на главную после входа
+LOGOUT_REDIRECT_URL = 'movie_list'

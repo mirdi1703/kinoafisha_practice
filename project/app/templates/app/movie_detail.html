@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ movie.title }} — Киноафиша Ульяновск</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <header class="header">
+        <a href="{% url 'movie_list' %}" class="logo-link">
+            <div class="logo">
+                <span class="logo-badge">KINO</span> Киноафиша Ульяновск
+            </div>
+        </a>
+        <nav class="nav">
+            <a href="{% url 'movie_list' %}">Главная</a>
+            <a href="{% url 'movie_list' %}">Афиша</a>
+            <a href="{% url 'movies' %}">Расписание</a>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'profile' %}">Привет, {{ request.user.username }}</a>
+                <form action="{% url 'logout' %}" method="post" class="nav-logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-logout-btn">Выйти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Войти</a>
+                <a href="{% url 'register' %}">Регистрация</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="container">
+        {% if messages %}
+            <div class="messages-list">
+                {% for message in messages %}
+                    <div class="alert-box alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <section class="movie-detail-box">
+            <div class="poster detail-poster">
+                <div class="badges">
+                    <span class="badge badge-age">{{ movie.age_rating }}</span>
+                    <span class="badge badge-rating">★ {{ movie.average_rating }}</span>
+                </div>
+                {% if movie.poster %}
+                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="poster-img">
+                {% endif %}
+            </div>
+
+            <div>
+                <h1>{{ movie.title }}</h1>
+                <p class="caption detail-margin-bottom">
+                    {{ movie.release_year }} • {{ movie.duration_minutes }} мин •
+                    {% for mg in movie.movie_genres.all %}
+                        {{ mg.genre.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p class="detail-margin-bottom">{{ movie.description }}</p>
+
+                <h3>Доступные сеансы</h3>
+                <div class="sessions-row">
+                    {% for session in sessions %}
+                        <div class="session-chip">
+                            <strong>{{ session.start_time|date:"d.m H:i" }}</strong>
+                            <div class="caption">{{ session.hall.name }} • {{ session.format }}</div>
+                        </div>
+                    {% empty %}
+                        <p class="caption">Актуальных сеансов пока нет.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="detail-reviews-section">
+            <div class="reviews-section-header">
+                <h2>Отзывы зрителей ({{ reviews.count }})</h2>
+
+                {% if request.user.is_authenticated %}
+                    {% if not user_review %}
+                        <button type="button" id="toggle-review-btn" class="btn btn-primary">Написать отзыв</button>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">Войдите, чтобы оставить отзыв</a>
+                {% endif %}
+            </div>
+
+            {% if request.user.is_authenticated %}
+                {% if user_review %}
+                    <div class="review-notice-box">
+                        <p>Вы уже оставили отзыв на этот фильм (статус: <strong>{{ user_review.get_moderation_status_display }}</strong>). Посмотреть его можно в <a href="{% url 'profile' %}">личном кабинете</a>.</p>
+                    </div>
+                {% else %}
+                    <div id="review-form-wrapper" class="review-form-box" style="display: none;">
+                        <h3>Ваш отзыв о фильме «{{ movie.title }}»</h3>
+                        <form method="post" class="review-form">
+                            {% csrf_token %}
+                            <div class="review-form-group">
+                                <label for="{{ form.rating.id_for_label }}">{{ form.rating.label }}</label>
+                                {{ form.rating }}
+                                {{ form.rating.errors }}
+                            </div>
+                            <div class="review-form-group">
+                                {{ form.text }}
+                                {{ form.text.errors }}
+                            </div>
+                            <div class="review-form-actions">
+                                <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+                                <button type="button" id="cancel-review-btn" class="btn btn-secondary">Отмена</button>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            {% for review in reviews %}
+                <article class="review-card">
+                    <div class="review-header">
+                        <div>
+                            <strong>{{ review.user.username }}</strong>
+                            <span class="caption"> • {{ review.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        <span class="badge badge-rating">★ {{ review.rating }}/10</span>
+                    </div>
+                    <p>{{ review.text }}</p>
+                </article>
+            {% empty %}
+                <p class="caption">На этот фильм пока нет опубликованных отзывов. Будьте первым!</p>
+            {% endfor %}
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
+    </footer>
+
+    <script>
+        const toggleBtn = document.getElementById('toggle-review-btn');
+        const cancelBtn = document.getElementById('cancel-review-btn');
+        const formWrapper = document.getElementById('review-form-wrapper');
+
+        if (toggleBtn && formWrapper) {
+            toggleBtn.addEventListener('click', () => {
+                formWrapper.style.display = 'block';
+                toggleBtn.style.display = 'none';
+            });
+        }
+
+        if (cancelBtn && formWrapper && toggleBtn) {
+            cancelBtn.addEventListener('click', () => {
+                formWrapper.style.display = 'none';
+                toggleBtn.style.display = 'inline-flex';
+            });
+        }
+    </script>
+
+</body>
+</html>
