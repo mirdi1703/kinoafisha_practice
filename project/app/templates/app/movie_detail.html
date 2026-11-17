@@ -17,8 +17,7 @@
         </a>
         <nav class="nav">
             <a href="{% url 'movie_list' %}">Главная</a>
-            <a href="{% url 'movie_list' %}">Афиша</a>
-            <a href="{% url 'movies' %}">Расписание</a>
+            <a href="{% url 'schedule' %}">Расписание</a>
             {% if request.user.is_authenticated %}
                 <a href="{% url 'profile' %}">Привет, {{ request.user.username }}</a>
                 <form action="{% url 'logout' %}" method="post" class="nav-logout-form">
@@ -64,14 +63,14 @@
 
                 <h3>Доступные сеансы</h3>
                 <div class="sessions-row">
-                    {% for session in sessions %}
-                        <div class="session-chip">
-                            <strong>{{ session.start_time|date:"d.m H:i" }}</strong>
-                            <div class="caption">{{ session.hall.name }} • {{ session.format }}</div>
-                        </div>
-                    {% empty %}
-                        <p class="caption">Актуальных сеансов пока нет.</p>
-                    {% endfor %}
+                {% for session in sessions %}
+                    <a href="{% url 'session_booking' session.pk %}" class="session-chip">
+                        <strong>{{ session.start_time|date:"d.m H:i" }}</strong>
+                        <div class="caption">{{ session.hall.name }} • {{ session.format }}</div>
+                    </a>
+                {% empty %}
+                    <p class="caption">Актуальных сеансов пока нет.</p>
+                {% endfor %}
                 </div>
             </div>
         </section>
@@ -90,11 +89,18 @@
             </div>
 
             {% if request.user.is_authenticated %}
-                {% if user_review %}
-                    <div class="review-notice-box">
-                        <p>Вы уже оставили отзыв на этот фильм (статус: <strong>{{ user_review.get_moderation_status_display }}</strong>). Посмотреть его можно в <a href="{% url 'profile' %}">личном кабинете</a>.</p>
+            {% if user_review %}
+                <div class="review-notice-box">
+                        <p>Вы уже оставили отзыв на этот фильм (статус: <strong>{{ user_review.get_moderation_status_display }}</strong>).</p>
+                    <div class="review-card-actions" style="margin-top: 10px;">
+                        <a href="{% url 'edit_review' user_review.pk %}" class="btn btn-secondary btn-sm">Редактировать</a>
+                        <form action="{% url 'delete_review' user_review.pk %}" method="post" onsubmit="return confirm('Вы уверены, что хотите удалить этот отзыв?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                        </form>
                     </div>
-                {% else %}
+                </div>
+            {% else %}
                     <div id="review-form-wrapper" class="review-form-box" style="display: none;">
                         <h3>Ваш отзыв о фильме «{{ movie.title }}»</h3>
                         <form method="post" class="review-form">
@@ -124,12 +130,12 @@
                             <strong>{{ review.user.username }}</strong>
                             <span class="caption"> • {{ review.created_at|date:"d.m.Y H:i" }}</span>
                         </div>
-                        <span class="badge badge-rating">★ {{ review.rating }}/10</span>
+                        <span class="badge {% if review.rating <= 4 %}badge-rating-low{% elif review.rating <= 6 %}badge-rating-mid{% else %}badge-rating-high{% endif %}">★ {{ review.rating }}/10</span>
                     </div>
                     <p>{{ review.text }}</p>
                 </article>
             {% empty %}
-                <p class="caption">На этот фильм пока нет опубликованных отзывов. Будьте первым!</p>
+                <p class="caption-movie">На этот фильм пока нет опубликованных отзывов. Будьте первым!</p>
             {% endfor %}
         </section>
     </main>

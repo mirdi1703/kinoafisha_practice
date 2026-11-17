@@ -7,9 +7,26 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # Главная и афиша
     path('', views.movie_list_view, name='movie_list'),
-    path('movies/', views.movie_list_view, name='movies'),
+    
+    # Расписание сеансов
+    path('schedule/', views.schedule_view, name='schedule'),
+    
+    # Детали фильма
     path('movie/<int:pk>/', views.movie_detail_view, name='movie_detail'),
+    
+    # Бронирование мест на сеанс
+    path('session/<int:pk>/book/', views.session_booking_view, name='session_booking'),
+
+    #Оплата
+    path('booking/<int:pk>/pay/', views.payment_view, name='payment_page'),
+
+    #Кассир
+    path('cashier/', views.cashier_panel_view, name='cashier_panel'),
+    
+    # Авторизация и профиль
     path('profile/', views.profile_view, name='profile'),
     path('register/', views.register_view, name='register'),
     path(
@@ -22,7 +39,15 @@ urlpatterns = [
         LogoutView.as_view(next_page='movie_list'),
         name='logout',
     ),
+    
+    # Управление отзывами
+    path('review/<int:pk>/edit/', views.edit_review_view, name='edit_review'),
+    path(
+        'review/<int:pk>/delete/',
+        views.delete_review_view,
+        name='delete_review',
+    ),
 ]
 
 if settings.DEBUG:
-  urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

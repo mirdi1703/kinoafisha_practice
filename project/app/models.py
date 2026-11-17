@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+import uuid
 
 
 class User(AbstractUser):
@@ -379,11 +380,11 @@ class Ticket(models.Model):
       verbose_name='Бронь',
   )
   booking_item = models.OneToOneField(
-      BookingItem,
-      on_delete=models.PROTECT,
-      related_name='ticket',
-      verbose_name='Позиция брони',
-  )
+        BookingItem,
+        on_delete=models.CASCADE,  # Изменили с PROTECT на CASCADE
+        related_name='ticket',
+        verbose_name='Позиция брони',
+    )
   session = models.ForeignKey(
       Session,
       on_delete=models.PROTECT,

@@ -17,8 +17,7 @@
         </a>
         <nav class="nav">
             <a href="{% url 'movie_list' %}">Главная</a>
-            <a href="{% url 'movie_list' %}">Афиша</a>
-            <a href="{% url 'movies' %}">Расписание</a>
+            <a href="{% url 'schedule' %}">Расписание</a>
             {% if request.user.is_authenticated %}
                 <a href="{% url 'profile' %}" class="active">Привет, {{ request.user.username }}</a>
                 <form action="{% url 'logout' %}" method="post" class="nav-logout-form">
@@ -33,6 +32,14 @@
     </header>
 
     <main class="container">
+        {% if messages %}
+            <div class="messages-list">
+                {% for message in messages %}
+                    <div class="alert-box alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <section class="profile-header-box">
             <div class="profile-header-top">
                 <div>
@@ -66,57 +73,61 @@
         </section>
 
         <section class="profile-section">
-            <h2>История сеансов и бронирований ({{ bookings.count }})</h2>
-
+            <div class="profile-section-header">
+                <h2>История ваших билетов</h2>
+                <span class="badge badge-count">{{ bookings|length }}</span>
+            </div>
+            
             {% if bookings %}
-                <div class="profile-list">
+                <div class="user-bookings-grid">
                     {% for booking in bookings %}
-                        <article class="profile-item-card">
-                            <div class="profile-item-top">
-                                <div>
-                                    <h3>
-                                        <a href="{% url 'movie_detail' booking.session.movie.pk %}" class="profile-movie-link">
+                        <!-- Выводим заказ только если в нём остались неудаленные билеты -->
+                        {% if booking.tickets.all %}
+                            <article class="booking-card-item">
+                                <div class="booking-card-top">
+                                    <div class="booking-meta-info">
+                                        <span class="booking-id">Заказ №{{ booking.id }}</span>
+                                        <span class="booking-date">{{ booking.created_at|date:"d.m.Y в H:i" }}</span>
+                                    </div>
+                                    <span class="badge badge-hall">{{ booking.session.hall.name }}</span>
+                                </div>
+
+                                <div class="booking-movie-main">
+                                    <h3 class="booking-movie-title">
+                                        <a href="{% url 'movie_detail' booking.session.movie.pk %}">
                                             {{ booking.session.movie.title }}
                                         </a>
                                     </h3>
-                                    <p class="caption">
-                                        {{ booking.session.start_time|date:"d.m.Y в H:i" }} • Зал: {{ booking.session.hall.name }} ({{ booking.session.format }})
+                                    <p class="caption booking-session-time">
+                                        {{ booking.session.start_time|date:"d.m.Y в H:i" }} • {{ booking.session.format }}
                                     </p>
                                 </div>
-                                <span class="status-badge status-{{ booking.status }}">
-                                    {{ booking.get_status_display }}
-                                </span>
-                            </div>
 
-                            <div class="profile-item-details">
-                                <p><strong>Код брони:</strong> {{ booking.booking_code }}</p>
-                                <p>
-                                    <strong>Места ({{ booking.seats_count }}):</strong>
-                                    {% for item in booking.items.all %}
-                                        Ряд {{ item.seat.row_number }}, место {{ item.seat.seat_number }}{% if not forloop.last %}; {% endif %}
-                                    {% empty %}
-                                        Не указаны
-                                    {% endfor %}
-                                </p>
-                                <p><strong>Сумма:</strong> {{ booking.total_amount }} руб.</p>
-                            </div>
-
-                            {% if booking.tickets.all %}
-                                <div class="profile-tickets">
-                                    {% for ticket in booking.tickets.all %}
-                                        <span class="genre-tag">
-                                            Билет #{{ ticket.id }} ({{ ticket.get_status_display }}) • QR: {{ ticket.qr_code }}
-                                        </span>
-                                    {% endfor %}
+                                <div class="booking-tickets-container">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <span class="booking-tickets-label">Места и билеты:</span>
+                                        <a href="{% url 'payment_page' booking.id %}" class="btn btn-secondary" style="font-size: 12px; padding: 4px 10px;">
+                                            Посмотреть QR-коды
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="ticket-chips-row">
+                                        {% for ticket in booking.tickets.all %}
+                                            <div class="ticket-chip active">
+                                                <span class="ticket-seat-text">Ряд {{ ticket.seat.row_number }}, место {{ ticket.seat.seat_number }}</span>
+                                                <span class="ticket-status-dot" title="Билет активен"></span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
-                            {% endif %}
-                        </article>
+                            </article>
+                        {% endif %}
                     {% endfor %}
                 </div>
             {% else %}
-                <div class="profile-empty-box">
-                    <p class="caption">У вас пока нет забронированных сеансов.</p>
-                    <a href="{% url 'movie_list' %}" class="btn btn-primary">Выбрать фильм</a>
+                <div class="empty-state-box">
+                    <p class="caption">У вас пока нет оформленных билетов и заказов.</p>
+                    <a href="{% url 'schedule' %}" class="btn btn-primary" style="margin-top: 12px;">Перейти к расписанию</a>
                 </div>
             {% endif %}
         </section>
@@ -138,13 +149,20 @@
                                     <span class="caption"> • {{ review.created_at|date:"d.m.Y H:i" }}</span>
                                 </div>
                                 <div class="profile-review-meta">
-                                    <span class="badge badge-rating">★ {{ review.rating }}/10</span>
+                                    <span class="badge {% if review.rating <= 4 %}badge-rating-low{% elif review.rating <= 6 %}badge-rating-mid{% else %}badge-rating-high{% endif %}">★ {{ review.rating }}/10</span>
                                     <span class="status-badge status-{{ review.moderation_status }}">
                                         {{ review.get_moderation_status_display }}
                                     </span>
                                 </div>
                             </div>
-                            <p>{{ review.text }}</p>
+                            <p class="review-card-text">{{ review.text }}</p>
+                            <div class="review-card-actions">
+                                <a href="{% url 'edit_review' review.pk %}" class="btn btn-secondary btn-sm">Редактировать</a>
+                                <form action="{% url 'delete_review' review.pk %}" method="post" onsubmit="return confirm('Вы уверены, что хотите удалить этот отзыв?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                                </form>
+                            </div>
                         </article>
                     {% endfor %}
                 </div>

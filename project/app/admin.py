@@ -94,7 +94,19 @@ class BookingAdmin(admin.ModelAdmin):
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
   list_display = ('id', 'booking', 'session', 'seat', 'price', 'status')
-  list_filter = ('status',)
+
+  def delete_model(self, request, obj):
+    # При удалении билета админом проверяем, нужно ли удалить связанный BookingItem или освободить бронь
+    if obj.booking_item:
+      # Если нужно полностью стирать позицию брони при удалении билета:
+      obj.booking_item.delete()
+    super().delete_model(request, obj)
+
+  def delete_queryset(self, request, queryset):
+    for obj in queryset:
+      if obj.booking_item:
+        obj.booking_item.delete()
+    super().delete_queryset(request, queryset)
 
 
 @admin.register(Review)

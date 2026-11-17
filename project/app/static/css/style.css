@@ -110,6 +110,12 @@ h3 {
   color: #64748b;
 }
 
+.caption-movie {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 20px;
+}
+
 .page-subtitle {
   margin-bottom: 24px;
 }
@@ -653,4 +659,562 @@ h3 {
   max-width: 500px;
   resize: vertical;
   font-family: inherit;
+}
+
+.review-card-text {
+  margin-bottom: 12px;
+}
+
+.review-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-sm {
+  min-height: 36px;
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+/* Страница расписания сеансов */
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.schedule-card {
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 140px 1fr 240px;
+  align-items: center;
+  gap: 24px;
+}
+
+.schedule-time-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  border-right: 1px solid #E2E8F0;
+  padding-right: 16px;
+}
+
+.schedule-time {
+  font-size: 26px;
+  color: #0F172A;
+  line-height: 1.1;
+}
+
+.schedule-movie-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schedule-prices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.schedule-hall-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.schedule-hall-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+/* Интерактивная карта зала */
+.hall-map-card {
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 12px;
+  padding: 32px 24px 24px;
+  color: #0F172A;
+}
+
+.cinema-screen-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.cinema-screen-curve {
+  width: 75%;
+  max-width: 460px;
+  height: 16px;
+  border-top: 3px solid #3B82F6;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  margin-bottom: 6px;
+}
+
+.cinema-screen-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #64748B;
+}
+
+.hall-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.hall-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: max-content;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 620px;
+}
+
+.row-seats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.seat-spacer {
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+}
+
+.seat-item {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.seat-item input {
+  display: none;
+}
+
+.seat-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #DBEAFE;
+  border: 1px solid #93C5FD;
+  color: transparent;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.seat-item:hover:not(.occupied) .seat-circle {
+  background-color: #93C5FD;
+  border-color: #3B82F6;
+  color: #0F172A;
+  transform: scale(1.12);
+}
+
+.row-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748B;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.hall-row.has-selected .row-label {
+  background-color: #EFF6FF;
+  color: #2563EB;
+}
+
+.seat-item.selected .seat-circle {
+  background-color: #2563EB;
+  border: 2px solid #1E293B;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.35);
+  transform: scale(1.18);
+}
+
+.seat-item.occupied {
+  cursor: not-allowed;
+}
+
+.seat-item.occupied .seat-circle {
+  width: 8px;
+  height: 8px;
+  background-color: #94A3B8;
+  border: none;
+  color: transparent;
+}
+
+.hall-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #E2E8F0;
+  font-size: 13px;
+  color: #475569;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.seat-sample {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.seat-sample.free {
+  background-color: #DBEAFE;
+  border: 1px solid #93C5FD;
+}
+
+.seat-sample.selected {
+  background-color: #3B82F6;
+}
+
+.seat-sample.occupied {
+  width: 8px;
+  height: 8px;
+  background-color: #94A3B8;
+}
+
+/* Цвета бейджа оценки в отзывах */
+.badge-rating-low {
+  background-color: #EF4444;
+  color: #FFFFFF;
+}
+
+.badge-rating-mid {
+  background-color: #64748B;
+  color: #FFFFFF;
+}
+
+.badge-rating-high {
+  background-color: #10B981;
+  color: #FFFFFF;
+}
+
+/* Дизайн карточек истории билетов в профиле */
+.profile-section {
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.profile-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.profile-section-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.badge-count {
+  background-color: #EFF6FF;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.user-bookings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.booking-card-item {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 18px 20px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.booking-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.booking-meta-info {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.booking-id {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.booking-date {
+  font-size: 12px;
+  color: #64748B;
+}
+
+.badge-hall {
+  background-color: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.booking-movie-main {
+  margin-bottom: 14px;
+}
+
+.booking-movie-title a {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0F172A;
+  text-decoration: none;
+}
+
+.booking-session-time {
+  font-size: 13px;
+  color: #475569;
+  margin-top: 2px;
+}
+
+.booking-tickets-container {
+  border-top: 1px solid #E2E8F0;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.booking-tickets-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ticket-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ticket-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  color: #1E40AF;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ticket-status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10B981;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.booking-empty-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #991B1B;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  width: 100%;
+}
+
+/* Стили страницы оплаты и QR */
+.payment-card-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.payment-card {
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 560px;
+}
+
+.payment-details-box {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 16px 0 24px;
+}
+
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.success-payment-banner {
+  background-color: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #065F46;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.qr-codes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.qr-item-card {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.qr-img-wrap img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid #CBD5E1;
+  background-color: #FFFFFF;
+  padding: 4px;
+}
+
+.qr-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Стили панели кассира */
+.cashier-header-section {
+  margin-bottom: 24px;
+}
+
+.cashier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .cashier-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cashier-card {
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.cashier-sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.cashier-session-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+
+.scanned-ticket-info {
+  margin-top: 20px;
+  background-color: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }

@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание сеансов — Киноафиша Ульяновск</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <header class="header">
+        <a href="{% url 'movie_list' %}" class="logo-link">
+            <div class="logo">
+                <span class="logo-badge">KINO</span> Киноафиша Ульяновск
+            </div>
+        </a>
+        <nav class="nav">
+            <a href="{% url 'movie_list' %}">Главная</a>
+            <a href="{% url 'schedule' %}" class="active">Расписание</a>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'profile' %}">Привет, {{ request.user.username }}</a>
+                <form action="{% url 'logout' %}" method="post" class="nav-logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-logout-btn">Выйти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Войти</a>
+                <a href="{% url 'register' %}">Регистрация</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="container">
+        <section>
+            <h1>Расписание сеансов и залов</h1>
+            <p class="caption page-subtitle">Выберите дату, зал и удобный сеанс для перехода к схеме мест</p>
+
+            <form method="get" class="filters-bar">
+                <select name="date" class="select" onchange="this.form.submit()">
+                    <option value="">Все даты</option>
+                    {% for d in available_dates %}
+                        <option value="{{ d|date:'Y-m-d' }}" {% if selected_date == d|date:'Y-m-d' %}selected{% endif %}>
+                            {{ d|date:"d.m.Y" }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <select name="hall" class="select" onchange="this.form.submit()">
+                    <option value="">Все залы</option>
+                    {% for hall in halls %}
+                        <option value="{{ hall.id }}" {% if selected_hall == hall.id %}selected{% endif %}>
+                            {{ hall.name }} (вместимость: {{ hall.capacity }})
+                        </option>
+                    {% endfor %}
+                </select>
+
+                {% if selected_date or selected_hall %}
+                    <a href="{% url 'schedule' %}" class="btn btn-secondary">Сбросить фильтры</a>
+                {% endif %}
+            </form>
+        </section>
+
+        <section class="schedule-list">
+            {% for session in sessions %}
+                <article class="schedule-card">
+                    <div class="schedule-time-box">
+                        <strong class="schedule-time">{{ session.start_time|date:"H:i" }}</strong>
+                        <span class="caption">{{ session.start_time|date:"d.m.Y" }}</span>
+                        <span class="badge badge-age">{{ session.format }}</span>
+                    </div>
+
+                    <div class="schedule-movie-info">
+                        <h3>
+                            <a href="{% url 'movie_detail' session.movie.pk %}" class="profile-movie-link">
+                                {{ session.movie.title }}
+                            </a>
+                        </h3>
+                        <p class="caption">
+                            {{ session.movie.age_rating }} • {{ session.movie.duration_minutes }} мин • Язык: {{ session.language }}
+                        </p>
+                        <div class="schedule-prices">
+                            {% for sp in session.seat_prices.all %}
+                                <span class="genre-tag">{{ sp.category.name }}: {{ sp.price }} руб.</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="schedule-hall-action">
+                        <div class="schedule-hall-meta">
+                            <strong>{{ session.hall.name }}</strong>
+                            <span class="caption">Мест в зале: {{ session.hall.capacity }}</span>
+                        </div>
+                        <a href="{% url 'session_booking' session.pk %}" class="btn btn-primary">Выбрать места</a>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="profile-section">
+                    <p class="caption">По выбранным параметрам запланированных сеансов нет.</p>
+                </div>
+            {% endfor %}
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
+    </footer>
+
+</body>
+</html>
