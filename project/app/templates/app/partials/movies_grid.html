@@ -1,47 +1,30 @@
 {% for movie in movies %}
-<article class="movie-card">
-  <div class="poster">
-    <div class="badges">
-      <span class="badge badge-age">{{ movie.age_rating }}</span>
-      <span class="badge badge-rating">★ {{ movie.average_rating }}</span>
-    </div>
-    {% if movie.poster %}
-    <img
-      src="{{ movie.poster.url }}"
-      alt="Постер фильма {{ movie.title }}"
-      class="poster-img"
-      loading="lazy"
-      width="280"
-      height="380"
-    />
-    {% endif %}
-    <div class="poster-info">
-      <span class="poster-duration"
-        >{{ movie.release_year }} • {{ movie.duration_minutes }} мин</span
-      >
-      <h3 class="poster-title">{{ movie.title }}</h3>
-    </div>
-  </div>
-  <div class="card-body">
-    <p class="card-desc">{{ movie.description|truncatechars:80 }}</p>
+    <article class="movie-card">
+        <div class="poster">
+            <div class="badges">
+                <span class="badge badge-age">{{ movie.age_rating }}</span>
+                <span class="badge badge-rating">★ {{ movie.average_rating }}</span>
+            </div>
+            {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" alt="Постер фильма {{ movie.title }}" class="poster-img" loading="lazy" width="280" height="380">
+            {% endif %}
+            <div class="poster-info">
+                <span class="poster-duration">{{ movie.release_year }} • {{ movie.duration_minutes }} мин</span>
+                <h3 class="poster-title">{{ movie.title }}</h3>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="card-desc">{{ movie.description|truncatechars:80 }}</p>
+            
+            <div class="card-genres">
+                {% for mg in movie.movie_genres.all %}
+                    <span class="genre-tag">{% if mg.is_primary %}⭐ {% endif %}{{ mg.genre.name }}</span>
+                {% endfor %}
+            </div>
 
-    <div class="card-genres">
-      {% for mg in movie.movie_genres.all %}
-      <span class="genre-tag"
-        >{% if mg.is_primary %}⭐ {% endif %}{{ mg.genre.name }}</span
-      >
-      {% endfor %}
-    </div>
-
-    <a href="{% url 'movie_detail' movie.pk %}" class="btn btn-primary btn-full"
-      >Подробнее о сеансах</a
-    >
-  </div>
-</article>
+            <a href="{% url 'movie_detail' movie.pk %}" class="btn btn-primary btn-full">Подробнее о сеансах</a>
+        </div>
+    </article>
 {% empty %}
-<p
-  style="grid-column: 1 / -1; text-align: center; padding: 32px; color: #64748b"
->
-  По вашему запросу фильмы не найдены.
-</p>
+    <p style="grid-column: 1 / -1; text-align: center; padding: 32px; color: #64748B;">По вашему запросу фильмы не найдены.</p>
 {% endfor %}

@@ -1,124 +1,92 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель кассира — Киноафиша</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-  </head>
-  <body>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
     <header class="header">
-      <a href="{% url 'movie_list' %}" class="logo-link">
-        <div class="logo">
-          <span class="logo-badge">KINO</span> Касса • Ульяновск
-        </div>
-      </a>
-      <nav class="nav">
-        <a href="{% url 'schedule' %}">Расписание</a>
-        <a href="{% url 'admin:index' %}" target="_blank">Админ-панель</a>
-        <a href="{% url 'profile' %}">Профиль</a>
-      </nav>
+        <a href="{% url 'movie_list' %}" class="logo-link">
+            <div class="logo">
+                <span class="logo-badge">KINO</span> Касса • Ульяновск
+            </div>
+        </a>
+        <nav class="nav">
+            <a href="{% url 'schedule' %}">Расписание</a>
+            <a href="{% url 'admin:index' %}" target="_blank">Админ-панель</a>
+            <a href="{% url 'profile' %}">Профиль</a>
+        </nav>
     </header>
 
     <main class="container">
-      <section class="cashier-header-section">
-        <h1>Панель кассира и контролера</h1>
-        <p class="caption">
-          Сканирование билетов по QR-токену и проверка актуальных сеансов
-        </p>
-      </section>
+        <section class="cashier-header-section">
+            <h1>Панель кассира и контролера</h1>
+            <p class="caption">Сканирование билетов по QR-токену и проверка актуальных сеансов</p>
+        </section>
 
-      {% if success_message %}
-      <div class="alert-box alert-success">{{ success_message }}</div>
-      {% endif %} {% if error_message %}
-      <div class="alert-box alert-danger">{{ error_message }}</div>
-      {% endif %}
+        {% if success_message %}
+            <div class="alert-box alert-success">{{ success_message }}</div>
+        {% endif %}
+        {% if error_message %}
+            <div class="alert-box alert-danger">{{ error_message }}</div>
+        {% endif %}
 
-      <div class="cashier-grid">
-        <!-- Блок сканирования / ввода токена билета -->
-        <div class="cashier-card">
-          <h2>Проверка и гашение билета</h2>
-          <p class="caption">
-            Введите токен из QR-кода билета для пропуска зрителя в зал
-          </p>
+        <div class="cashier-grid">
+            <!-- Блок сканирования / ввода токена билета -->
+            <div class="cashier-card">
+                <h2>Проверка и гашение билета</h2>
+                <p class="caption">Введите токен из QR-кода билета для пропуска зрителя в зал</p>
 
-          <form method="post" class="cashier-form">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="verify_ticket" />
-            <div class="form-group" style="margin: 16px 0">
-              <label for="qr_code" class="caption">QR-код / Токен билета</label>
-              <input
-                type="text"
-                id="qr_code"
-                name="qr_code"
-                class="form-control"
-                placeholder="Например: 4A8F2C..."
-                required
-                autofocus
-              />
+                <form method="post" class="cashier-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="verify_ticket">
+                    <div class="form-group" style="margin: 16px 0;">
+                        <label for="qr_code" class="caption">QR-код / Токен билета</label>
+                        <input type="text" id="qr_code" name="qr_code" class="form-control" placeholder="Например: 4A8F2C..." required autofocus>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Проверить и погасить билет</button>
+                </form>
+
+                {% if scanned_ticket %}
+                    <div class="scanned-ticket-info">
+                        <h3>Информация о билете</h3>
+                        <p>Фильм: <strong>{{ scanned_ticket.session.movie.title }}</strong></p>
+                        <p>Сеанс: {{ scanned_ticket.session.start_time|date:"d.m.Y в H:i" }} ({{ scanned_ticket.session.hall.name }})</p>
+                        <p>Место: Ряд <strong>{{ scanned_ticket.seat.row_number }}</strong>, Место <strong>{{ scanned_ticket.seat.seat_number }}</strong></p>
+                        <p>Статус: <span class="badge {% if scanned_ticket.status == 'valid' %}badge-success{% else %}badge-warning{% endif %}">{{ scanned_ticket.get_status_display }}</span></p>
+                    </div>
+                {% endif %}
             </div>
-            <button type="submit" class="btn btn-primary btn-full">
-              Проверить и погасить билет
-            </button>
-          </form>
 
-          {% if scanned_ticket %}
-          <div class="scanned-ticket-info">
-            <h3>Информация о билете</h3>
-            <p>
-              Фильм: <strong>{{ scanned_ticket.session.movie.title }}</strong>
-            </p>
-            <p>
-              Сеанс: {{ scanned_ticket.session.start_time|date:"d.m.Y в H:i" }}
-              ({{ scanned_ticket.session.hall.name }})
-            </p>
-            <p>
-              Место: Ряд <strong>{{ scanned_ticket.seat.row_number }}</strong>,
-              Место <strong>{{ scanned_ticket.seat.seat_number }}</strong>
-            </p>
-            <p>
-              Статус:
-              <span
-                class="badge {% if scanned_ticket.status == 'valid' %}badge-success{% else %}badge-warning{% endif %}"
-                >{{ scanned_ticket.get_status_display }}</span
-              >
-            </p>
-          </div>
-          {% endif %}
-        </div>
+            <!-- Блок ближайших сеансов -->
+            <div class="cashier-card">
+                <h2>Ближайшие сеансы</h2>
+                <p class="caption">Быстрый переход к продаже билетов на кассе</p>
 
-        <!-- Блок ближайших сеансов -->
-        <div class="cashier-card">
-          <h2>Ближайшие сеансы</h2>
-          <p class="caption">Быстрый переход к продаже билетов на кассе</p>
-
-          <div class="cashier-sessions-list">
-            {% for session in active_sessions %}
-            <div class="cashier-session-row">
-              <div>
-                <strong>{{ session.start_time|date:"H:i" }}</strong> — {{
-                session.movie.title }} <br /><span class="caption"
-                  >{{ session.hall.name }} • {{ session.format }}</span
-                >
-              </div>
-              <a
-                href="{% url 'session_booking' session.id %}"
-                class="btn btn-secondary"
-                style="font-size: 12px; padding: 6px 12px"
-                >Выбрать места</a
-              >
+                <div class="cashier-sessions-list">
+                    {% for session in active_sessions %}
+                        <div class="cashier-session-row">
+                            <div>
+                                <strong>{{ session.start_time|date:"H:i" }}</strong> — {{ session.movie.title }}
+                                <br><span class="caption">{{ session.hall.name }} • {{ session.format }}</span>
+                            </div>
+                            <a href="{% url 'session_booking' session.id %}" class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;">Выбрать места</a>
+                        </div>
+                    {% empty %}
+                        <p class="caption">Нет активных сеансов на ближайшее время.</p>
+                    {% endfor %}
+                </div>
             </div>
-            {% empty %}
-            <p class="caption">Нет активных сеансов на ближайшее время.</p>
-            {% endfor %}
-          </div>
         </div>
-      </div>
     </main>
 
     <footer class="footer">
-      <p>© 2026 Киноафиша Ульяновск. Рабочее место кассира.</p>
+        <p>© 2026 Киноафиша Ульяновск. Рабочее место кассира.</p>
     </footer>
-  </body>
+
+</body>
 </html>

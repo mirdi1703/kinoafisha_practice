@@ -130,5 +130,5 @@ MAILERS = {
 
 AUTH_USER_MODEL = 'app.User'
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'profile'  # Или 'movie_list', если хотите переходить на главную после входа
+LOGIN_REDIRECT_URL = 'profile'
 LOGOUT_REDIRECT_URL = 'movie_list'

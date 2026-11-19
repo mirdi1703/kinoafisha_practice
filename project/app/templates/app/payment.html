@@ -1,100 +1,78 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Оплата заказа №{{ booking.id }} — Киноафиша</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-  </head>
-  <body>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
     <header class="header">
-      <a href="{% url 'movie_list' %}" class="logo-link">
-        <div class="logo">
-          <span class="logo-badge">KINO</span> Киноафиша Ульяновск
-        </div>
-      </a>
-      <nav class="nav">
-        <a href="{% url 'movie_list' %}">Главная</a>
-        <a href="{% url 'schedule' %}">Расписание</a>
-        <a href="{% url 'profile' %}">Личный кабинет</a>
-      </nav>
+        <a href="{% url 'movie_list' %}" class="logo-link">
+            <div class="logo">
+                <span class="logo-badge">KINO</span> Киноафиша Ульяновск
+            </div>
+        </a>
+        <nav class="nav">
+            <a href="{% url 'movie_list' %}">Главная</a>
+            <a href="{% url 'schedule' %}">Расписание</a>
+            <a href="{% url 'profile' %}">Личный кабинет</a>
+        </nav>
     </header>
 
     <main class="container">
-      <section class="payment-card-wrap">
-        <div class="payment-card">
-          <h1>Оплата заказа №{{ booking.id }}</h1>
-          <p class="caption">
-            Сеанс: <strong>{{ booking.session.movie.title }}</strong>
-          </p>
-          <p class="caption">
-            {{ booking.session.start_time|date:"d.m.Y в H:i" }} • {{
-            booking.session.hall.name }}
-          </p>
+        <section class="payment-card-wrap">
+            <div class="payment-card">
+                <h1>Оплата заказа №{{ booking.id }}</h1>
+                <p class="caption">Сеанс: <strong>{{ booking.session.movie.title }}</strong></p>
+                <p class="caption">{{ booking.session.start_time|date:"d.m.Y в H:i" }} • {{ booking.session.hall.name }}</p>
 
-          <div class="payment-details-box">
-            <p>
-              Забронировано мест: <strong>{{ booking.items.count }}</strong>
-            </p>
-          </div>
+                <div class="payment-details-box">
+                    <p>Забронировано мест: <strong>{{ booking.items.count }}</strong></p>
+                </div>
 
-          {% if not is_paid %}
-          <form method="post" class="payment-form">
-            {% csrf_token %}
-            <div class="form-group">
-              <label class="caption">Номер банковской карты (тестовый)</label>
-              <input
-                type="text"
-                class="form-control"
-                value="4276 3800 0000 1234"
-                readonly
-              />
+                {% if not is_paid %}
+                    <form method="post" class="payment-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="caption">Номер банковской карты (тестовый)</label>
+                            <input type="text" class="form-control" value="4276 3800 0000 1234" readonly>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Оплатить билет</button>
+                    </form>
+                {% else %}
+                    <div class="success-payment-banner">
+                        <h3>Оплата прошла успешно!</h3>
+                        <p class="caption">Ваши билеты сформированы. Покажите QR-код контролеру на входе.</p>
+                    </div>
+
+                    <div class="qr-codes-grid">
+                        {% for item in ticket_qrs %}
+                            <div class="qr-item-card">
+                                <div class="qr-img-wrap">
+                                    <img src="data:image/png;base64,{{ item.qr_image }}" alt="QR код билета">
+                                </div>
+                                <div class="qr-info">
+                                    <strong>Ряд {{ item.ticket.seat.row_number }}, Место {{ item.ticket.seat.seat_number }}</strong>
+                                    <span class="caption">Билет №{{ item.ticket.id }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div style="margin-top: 24px; text-align: center;">
+                        <a href="{% url 'profile' %}" class="btn btn-primary">Перейти в личный кабинет</a>
+                    </div>
+                {% endif %}
             </div>
-            <button type="submit" class="btn btn-primary btn-full">
-              Оплатить билет
-            </button>
-          </form>
-          {% else %}
-          <div class="success-payment-banner">
-            <h3>Оплата прошла успешно!</h3>
-            <p class="caption">
-              Ваши билеты сформированы. Покажите QR-код контролеру на входе.
-            </p>
-          </div>
-
-          <div class="qr-codes-grid">
-            {% for item in ticket_qrs %}
-            <div class="qr-item-card">
-              <div class="qr-img-wrap">
-                <img
-                  src="data:image/png;base64,{{ item.qr_image }}"
-                  alt="QR код билета"
-                />
-              </div>
-              <div class="qr-info">
-                <strong
-                  >Ряд {{ item.ticket.seat.row_number }}, Место {{
-                  item.ticket.seat.seat_number }}</strong
-                >
-                <span class="caption">Билет №{{ item.ticket.id }}</span>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-
-          <div style="margin-top: 24px; text-align: center">
-            <a href="{% url 'profile' %}" class="btn btn-primary"
-              >Перейти в личный кабинет</a
-            >
-          </div>
-          {% endif %}
-        </div>
-      </section>
+        </section>
     </main>
 
     <footer class="footer">
-      <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
+        <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
     </footer>
-  </body>
+
+</body>
 </html>

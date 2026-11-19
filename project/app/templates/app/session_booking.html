@@ -1,169 +1,144 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Выбор мест — {{ session.movie.title }}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-  </head>
-  <body>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
     <header class="header">
-      <a href="{% url 'movie_list' %}" class="logo-link">
-        <div class="logo">
-          <span class="logo-badge">KINO</span> Киноафиша Ульяновск
-        </div>
-      </a>
-      <nav class="nav">
-        <a href="{% url 'movie_list' %}">Главная</a>
-        <a href="{% url 'schedule' %}" class="active">Расписание</a>
-        {% if request.user.is_authenticated %}
-        <a href="{% url 'profile' %}">Привет, {{ request.user.username }}</a>
-        <form action="{% url 'logout' %}" method="post" class="nav-logout-form">
-          {% csrf_token %}
-          <button type="submit" class="nav-logout-btn">Выйти</button>
-        </form>
-        {% else %}
-        <a href="{% url 'login' %}">Войти</a>
-        <a href="{% url 'register' %}">Регистрация</a>
-        {% endif %}
-      </nav>
+        <a href="{% url 'movie_list' %}" class="logo-link">
+            <div class="logo">
+                <span class="logo-badge">KINO</span> Киноафиша Ульяновск
+            </div>
+        </a>
+        <nav class="nav">
+            <a href="{% url 'movie_list' %}">Главная</a>
+            <a href="{% url 'schedule' %}" class="active">Расписание</a>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'profile' %}">Привет, {{ request.user.username }}</a>
+                <form action="{% url 'logout' %}" method="post" class="nav-logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-logout-btn">Выйти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Войти</a>
+                <a href="{% url 'register' %}">Регистрация</a>
+            {% endif %}
+        </nav>
     </header>
 
     <main class="container">
-      {% if messages %}
-      <div class="messages-list">
-        {% for message in messages %}
-        <div class="alert-box alert-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-      {% endif %}
+        {% if messages %}
+            <div class="messages-list">
+                {% for message in messages %}
+                    <div class="alert-box alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-      <section class="booking-header-box">
-        <div>
-          <h1>{{ session.movie.title }}</h1>
-          <p class="caption">
-            {{ session.start_time|date:"d.m.Y в H:i" }} • {{ session.hall.name
-            }} • {{ session.format }} ({{ session.language }})
-          </p>
-        </div>
-        <a href="{% url 'schedule' %}" class="btn btn-secondary"
-          >К расписанию</a
-        >
-      </section>
+        <section class="booking-header-box">
+            <div>
+                <h1>{{ session.movie.title }}</h1>
+                <p class="caption">
+                    {{ session.start_time|date:"d.m.Y в H:i" }} • {{ session.hall.name }} • {{ session.format }} ({{ session.language }})
+                </p>
+            </div>
+            <a href="{% url 'schedule' %}" class="btn btn-secondary">К расписанию</a>
+        </section>
 
-      <form method="post" id="booking-form" class="booking-layout">
-        {% csrf_token %}
+        <form method="post" id="booking-form" class="booking-layout">
+            {% csrf_token %}
 
-        <div class="hall-map-card">
-          <div class="cinema-screen-wrap">
-            <div class="cinema-screen-curve"></div>
-            <span class="cinema-screen-label">ЭКРАН</span>
-          </div>
+            <div class="hall-map-card">
+                <div class="cinema-screen-wrap">
+                    <div class="cinema-screen-curve"></div>
+                    <span class="cinema-screen-label">ЭКРАН</span>
+                </div>
 
-          {% if rows %}
-          <div class="hall-rows">
-            {% for row_number, row_slots in rows %}
-            <div class="hall-row">
-              <span class="row-label">{{ row_number }}</span>
-              <div class="row-seats">
-                {% for seat in row_slots %} {% if seat %}
-                <label
-                  class="seat-item {% if seat.is_occupied %}occupied{% endif %}"
-                  title="Ряд {{ row_number }}, Место {{ seat.number }} — {{ seat.category }} ({{ seat.price }} руб.)"
-                >
-                  <input
-                    type="checkbox"
-                    name="seats"
-                    value="{{ seat.id }}"
-                    data-row="{{ row_number }}"
-                    data-seat="{{ seat.number }}"
-                    data-category="{{ seat.category }}"
-                    data-price="{{ seat.price }}"
-                    {%
-                    if
-                    seat.is_occupied
-                    %}disabled{%
-                    endif
-                    %}
-                  />
-                  <span class="seat-circle">{{ seat.number }}</span>
-                </label>
+                {% if rows %}
+                    <div class="hall-rows">
+                        {% for row_number, row_slots in rows %}
+                            <div class="hall-row">
+                                <span class="row-label">{{ row_number }}</span>
+                                <div class="row-seats">
+                                    {% for seat in row_slots %}
+                                        {% if seat %}
+                                            <label class="seat-item {% if seat.is_occupied %}occupied{% endif %}" title="Ряд {{ row_number }}, Место {{ seat.number }} — {{ seat.category }} ({{ seat.price }} руб.)">
+                                                <input
+                                                    type="checkbox"
+                                                    name="seats"
+                                                    value="{{ seat.id }}"
+                                                    data-row="{{ row_number }}"
+                                                    data-seat="{{ seat.number }}"
+                                                    data-category="{{ seat.category }}"
+                                                    data-price="{{ seat.price }}"
+                                                    {% if seat.is_occupied %}disabled{% endif %}
+                                                >
+                                                <span class="seat-circle">{{ seat.number }}</span>
+                                            </label>
+                                        {% else %}
+                                            <span class="seat-spacer"></span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="row-label">{{ row_number }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% else %}
-                <span class="seat-spacer"></span>
-                {% endif %} {% endfor %}
-              </div>
-              <span class="row-label">{{ row_number }}</span>
+                    <p class="caption" style="text-align: center; padding: 24px;">
+                        Для зала «{{ session.hall.name }}» ещё не настроены места в базе данных.
+                    </p>
+                {% endif %}
+
+                <div class="hall-legend">
+                    <span class="legend-item"><span class="seat-sample free"></span> Свободно</span>
+                    <span class="legend-item"><span class="seat-sample selected"></span> Выбрано</span>
+                    <span class="legend-item"><span class="seat-sample occupied"></span> Занято</span>
+                </div>
             </div>
-            {% endfor %}
-          </div>
-          {% else %}
-          <p class="caption" style="text-align: center; padding: 24px">
-            Для зала «{{ session.hall.name }}» ещё не настроены места в базе
-            данных.
-          </p>
-          {% endif %}
 
-          <div class="hall-legend">
-            <span class="legend-item"
-              ><span class="seat-sample free"></span> Свободно</span
-            >
-            <span class="legend-item"
-              ><span class="seat-sample selected"></span> Выбрано</span
-            >
-            <span class="legend-item"
-              ><span class="seat-sample occupied"></span> Занято</span
-            >
-          </div>
-        </div>
+            <aside class="booking-summary-card">
+                <h2>Ваш заказ</h2>
 
-        <aside class="booking-summary-card">
-          <h2>Ваш заказ</h2>
+                <div class="summary-prices-list">
+                    <p class="caption">Тарифы на сеанс:</p>
+                    {% for sp in seat_prices %}
+                        <div class="summary-price-row">
+                            <span>{{ sp.category.name }}</span>
+                            <strong>{{ sp.price }} руб.</strong>
+                        </div>
+                    {% empty %}
+                        <p class="caption">Цены не заданы</p>
+                    {% endfor %}
+                </div>
 
-          <div class="summary-prices-list">
-            <p class="caption">Тарифы на сеанс:</p>
-            {% for sp in seat_prices %}
-            <div class="summary-price-row">
-              <span>{{ sp.category.name }}</span>
-              <strong>{{ sp.price }} руб.</strong>
-            </div>
-            {% empty %}
-            <p class="caption">Цены не заданы</p>
-            {% endfor %}
-          </div>
+                <div id="selected-seats-list" class="selected-seats-box">
+                    <p class="caption">Выберите места на схеме зала</p>
+                </div>
 
-          <div id="selected-seats-list" class="selected-seats-box">
-            <p class="caption">Выберите места на схеме зала</p>
-          </div>
+                <div class="summary-total-row">
+                    <span>Итого к оплате:</span>
+                    <strong id="total-price">0 руб.</strong>
+                </div>
 
-          <div class="summary-total-row">
-            <span>Итого к оплате:</span>
-            <strong id="total-price">0 руб.</strong>
-          </div>
-
-          <button
-            type="submit"
-            id="submit-booking-btn"
-            class="btn btn-primary btn-full"
-            disabled
-          >
-            Забронировать и оплатить
-          </button>
-        </aside>
-      </form>
+                <button type="submit" id="submit-booking-btn" class="btn btn-primary btn-full" disabled>
+                    Забронировать и оплатить
+                </button>
+            </aside>
+        </form>
     </main>
 
     <footer class="footer">
-      <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
+        <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
     </footer>
-
-    <div
-      id="session-data"
-      data-session-id="{{ session.id }}"
-      style="display: none"
-    ></div>
 
     <script src="{% static 'js/dynamic_seats.js' %}"></script>
     <script src="{% static 'js/seats_check.js' %}"></script>
-  </body>
+
+</body>
 </html>

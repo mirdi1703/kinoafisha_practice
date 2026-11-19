@@ -1,39 +1,40 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход — Киноафиша</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-  </head>
-  <body>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
     <header class="header">
-      <a href="{% url 'movie_list' %}" class="logo-link">
-        <div class="logo">
-          <span class="logo-badge">KINO</span> Киноафиша Ульяновск
-        </div>
-      </a>
-      <nav class="nav">
-        <a href="{% url 'register' %}">Регистрация</a>
-      </nav>
+        <a href="{% url 'movie_list' %}" class="logo-link">
+            <div class="logo">
+                <span class="logo-badge">KINO</span> Киноафиша Ульяновск
+            </div>
+        </a>
+        <nav class="nav">
+            <a href="{% url 'register' %}">Регистрация</a>
+        </nav>
     </header>
 
     <main class="container">
-      <div class="auth-card">
-        <h1>Вход в систему</h1>
-        <form method="post" class="auth-form">
-          {% csrf_token %} {{ form.as_p }}
-          <button type="submit" class="btn btn-primary btn-full">Войти</button>
-        </form>
-        <p class="caption auth-footer-text">
-          Нет аккаунта? <a href="{% url 'register' %}">Зарегистрируйтесь</a>
-        </p>
-      </div>
+        <div class="auth-card">
+            <h1>Вход в систему</h1>
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary btn-full">Войти</button>
+            </form>
+            <p class="caption auth-footer-text">Нет аккаунта? <a href="{% url 'register' %}">Зарегистрируйтесь</a></p>
+        </div>
     </main>
 
     <footer class="footer">
-      <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
+        <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
     </footer>
-  </body>
+
+</body>
 </html>
