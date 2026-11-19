@@ -87,8 +87,15 @@ def profile_view(request):
     Представление личного кабинета пользователя.
     Загружает историю бронирований и список отзывов текущего пользователя.
     """
+    user_bookings_qs = Booking.objects.filter(user=request.user)
+
+    for booking in user_bookings_qs.filter(status__in=["pending", "active"]):
+        if booking.is_expired():
+            booking.status = "expired"
+            booking.save(update_fields=["status"])
+
     bookings = (
-        Booking.objects.filter(user=request.user)
+        user_bookings_qs
         .select_related("session__movie", "session__hall")
         .prefetch_related("items__seat", "tickets", "items")
         .order_by("-created_at")

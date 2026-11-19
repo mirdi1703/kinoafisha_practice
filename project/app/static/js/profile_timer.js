@@ -1,32 +1,57 @@
-        document.addEventListener("DOMContentLoaded", function () {
-            const timerBoxes = document.querySelectorAll(".booking-timer-box");
+document.addEventListener("DOMContentLoaded", function () {
+    const timerBoxes = document.querySelectorAll(".booking-timer-box");
+    if (!timerBoxes.length) return;
 
-            timerBoxes.forEach(box => {
-                const expiresStr = box.dataset.expires;
-                if (!expiresStr) return;
+    let reloadScheduled = false;
 
-                // Если в базе записано время создания, прибавляем к нему 15 минут (900000 миллисекунд)
-                const expiresAt = new Date(expiresStr).getTime();
-                const displayEl = box.querySelector(".countdown-timer");
+    function triggerReload() {
+        if (reloadScheduled) return;
+        reloadScheduled = true;
+        clearInterval(intervalId);
+        setTimeout(function () {
+            window.location.reload();
+        }, 1000);
+    }
 
-                function updateCountdown() {
-                    const now = new Date().getTime();
-                    const distance = expiresAt - now;
+    function updateCountdown(box, displayEl, expiresAt) {
+        const now = Date.now();
+        const distance = expiresAt - now;
 
-                    if (distance < 0) {
-                        displayEl.textContent = "Время истекло";
-                        setTimeout(() => location.reload(), 1500);
-                        return;
-                    }
+        if (distance <= 0) {
+            displayEl.textContent = "Время истекло";
+            triggerReload();
+            return;
+        }
 
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        const totalSeconds = Math.floor(distance / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
 
-                    displayEl.textContent = 
-                        String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
-                }
+        displayEl.textContent =
+            String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+    }
 
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-            });
+    const activeTimers = [];
+
+    timerBoxes.forEach((box) => {
+        const expiresStr = box.dataset.expires;
+        const displayEl = box.querySelector(".countdown-timer");
+        if (!expiresStr || !displayEl) return;
+
+        const expiresAt = Date.parse(expiresStr);
+        if (Number.isNaN(expiresAt)) return;
+
+        activeTimers.push({ box, displayEl, expiresAt });
+    });
+
+    if (!activeTimers.length) return;
+
+    function tick() {
+        activeTimers.forEach((item) => {
+            updateCountdown(item.box, item.displayEl, item.expiresAt);
         });
+    }
+
+    tick();
+    const intervalId = setInterval(tick, 1000);
+});

@@ -6,35 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Киноафиша — Главная страница</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
 </head>
 <body>
 
     <header class="header">
-        <a href="{% url 'movie_list' %}" class="logo-link">
-            <div class="logo">
-                <span class="logo-badge">KINO</span> Киноафиша Ульяновск
-            </div>
-        </a>
-        <nav class="nav">
-            <a href="{% url 'movie_list' %}" class="active">Главная</a>
-            <a href="{% url 'schedule' %}">Расписание</a>
-            {% if request.user.is_authenticated %}
-                {% if request.user.is_authenticated %}
-                <a href="{% url 'profile' %}">Привет, {{ request.user.username }}</a>
-                
-                <form action="{% url 'logout' %}" method="post" class="nav-logout-form">
-                    {% csrf_token %}
-                    <button type="submit" class="nav-logout-btn">Выйти</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}">Войти</a>
-                <a href="{% url 'register' %}">Регистрация</a>
-            {% endif %}
-            {% else %}
-                <a href="{% url 'login' %}">Войти</a>
-                <a href="{% url 'register' %}">Регистрация</a>
-            {% endif %}
-        </nav>
+    <a href="{% url 'movie_list' %}" class="logo-link">
+        <div class="logo">
+            <span class="logo-badge">KINO</span> Киноафиша Ульяновск
+        </div>
+    </a>
+
+    <button type="button" class="burger-btn" aria-label="Открыть меню" aria-expanded="false">
+        <span class="burger-line" aria-hidden="true"></span>
+        <span class="burger-line" aria-hidden="true"></span>
+        <span class="burger-line" aria-hidden="true"></span>
+    </button>
+
+    <nav class="nav" aria-label="Основная навигация">
+        <a href="{% url 'movie_list' %}" aria-current="page">Главная</a>
+        <a href="{% url 'schedule' %}">Расписание</a>
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="active">Привет, {{ request.user.username }}</a>
+            <form action="{% url 'logout' %}" method="post" class="nav-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="nav-logout-btn">Выйти</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">Войти</a>
+            <a href="{% url 'register' %}">Регистрация</a>
+        {% endif %}
+    </nav>
     </header>
 
     <main class="container">
@@ -42,8 +44,11 @@
             <h1>Сегодня в кино</h1>
             <p class="caption page-subtitle">Актуальное расписание сеансов и каталог фильмов</p>
 
-            <form id="filter-form" method="get" class="filters-bar">
+            <form id="filter-form" method="get" class="filters-bar" aria-label="Фильтр фильмов">
+                <label for="search-input" class="visually-hidden">Поиск фильма по названию</label>
                 <input type="text" id="search-input" name="q" value="{{ search_query }}" placeholder="Поиск фильма по названию..." class="input" autocomplete="off">
+
+                <label for="genre-select" class="visually-hidden">Фильтр по жанру</label>
                 <select id="genre-select" name="genre" class="select">
                     <option value="">Все жанры (с фильмами)</option>
                     {% for genre in genres %}
@@ -66,6 +71,7 @@
     </footer>
 
     <script src="{% static 'js/search.js' %}"></script>
+    <script src="{% static 'js/burger_menu.js' %}"></script>
 
 </body>
 </html>

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход — Киноафиша</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
 </head>
 <body>
 
@@ -15,6 +16,13 @@
                 <span class="logo-badge">KINO</span> Киноафиша Ульяновск
             </div>
         </a>
+
+        <button type="button" class="burger-btn" aria-label="Открыть меню" aria-expanded="false">
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+        </button>
+
         <nav class="nav">
             <a href="{% url 'register' %}">Регистрация</a>
         </nav>
@@ -35,6 +43,8 @@
     <footer class="footer">
         <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
     </footer>
+
+    <script src="{% static 'js/burger_menu.js' %}"></script>
 
 </body>
 </html>
