@@ -3,7 +3,9 @@
         <div class="poster">
             <div class="badges">
                 <span class="badge badge-age">{{ movie.age_rating }}</span>
-                <span class="badge badge-rating">★ {{ movie.average_rating }}</span>
+                <span class="badge {% if movie.average_rating < 5 %}badge-rating-low{% elif movie.average_rating < 7 %}badge-rating-mid{% else %}badge-rating-high{% endif %}">
+                    ★ {{ movie.average_rating }}
+                </span>
             </div>
             {% if movie.poster %}
                 <img src="{{ movie.poster.url }}" alt="Постер фильма {{ movie.title }}" class="poster-img" loading="lazy" width="280" height="380">

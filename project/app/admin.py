@@ -8,6 +8,7 @@ from .models import (
     Movie,
     MovieGenre,
     Review,
+    recalculate_movie_rating,
     Seat,
     SeatCategory,
     Session,
@@ -15,6 +16,12 @@ from .models import (
     Ticket,
     User,
 )
+
+def save_model(self, request, obj, form, change):
+    if not change and obj.average_rating and not obj.base_rating:
+        obj.base_rating = obj.average_rating
+    super().save_model(request, obj, form, change)
+    recalculate_movie_rating(obj)
 
 
 class MovieGenreInline(admin.TabularInline):
@@ -134,13 +141,19 @@ class TicketAdmin(admin.ModelAdmin):
                 obj.booking_item.delete()
         super().delete_queryset(request, queryset)
 
-
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    """Конфигурация панели администратора для модерации отзывов."""
-
     list_display = ("movie", "user", "rating", "moderation_status", "created_at")
     list_filter = ("moderation_status", "rating")
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        recalculate_movie_rating(obj.movie)
+
+    def delete_model(self, request, obj):
+        movie = obj.movie
+        super().delete_model(request, obj)
+        recalculate_movie_rating(movie)
 
 
 @admin.register(User)

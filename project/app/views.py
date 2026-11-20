@@ -25,6 +25,7 @@ from .models import (
     Session,
     SessionSeatPrice,
     Ticket,
+    recalculate_movie_rating,
 )
 
 
@@ -214,7 +215,9 @@ def delete_review_view(request, pk):
     """Представление для удаления отзыва пользователя."""
     review = get_object_or_404(Review, pk=pk, user=request.user)
     if request.method == "POST":
+        movie = review.movie
         review.delete()
+        recalculate_movie_rating(movie)
         messages.success(request, "Ваш отзыв успешно удалён.")
     return redirect("profile")
 

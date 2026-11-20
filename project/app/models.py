@@ -4,7 +4,26 @@ from django.db import models
 import uuid
 from datetime import timedelta
 from django.utils import timezone
+from decimal import Decimal
+from django.db.models import Avg
 
+def recalculate_movie_rating(movie):
+    base = movie.base_rating if movie.base_rating is not None else Decimal("0.00")
+    published_ratings = list(
+        movie.reviews.filter(moderation_status="published").values_list(
+            "rating", flat=True
+        )
+    )
+
+    if not published_ratings:
+        new_rating = base
+    else:
+        total = Decimal(base) + sum(Decimal(r) for r in published_ratings)
+        count = len(published_ratings) + 1
+        new_rating = (total / Decimal(count)).quantize(Decimal("0.01"))
+
+    movie.average_rating = new_rating
+    movie.save(update_fields=["average_rating"])
 
 class User(AbstractUser):
     """
@@ -61,11 +80,17 @@ class Movie(models.Model):
         default="in_poster",
         verbose_name="Статус показа",
     )
+    base_rating = models.DecimalField(
+    max_digits=3,
+    decimal_places=2,
+    default=Decimal("0.00"),
+    verbose_name="Базовая оценка",
+    )
     average_rating = models.DecimalField(
-        max_digits=3,
-        decimal_places=2,
-        default=0.00,
-        verbose_name="Средний рейтинг",
+    max_digits=3,
+    decimal_places=2,
+    default=Decimal("0.00"),
+    verbose_name="Средний рейтинг",
     )
 
     class Meta:
