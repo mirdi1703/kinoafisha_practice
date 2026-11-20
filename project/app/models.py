@@ -267,7 +267,7 @@ class SessionSeatPrice(models.Model):
         verbose_name="Категория места",
     )
     price = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Стоимость (руб.)"
+        max_digits=10, decimal_places=2, validators= [MinValueValidator(0)], verbose_name="Стоимость (руб.)"
     )
     is_active = models.BooleanField(default=True, verbose_name="Активен")
 
