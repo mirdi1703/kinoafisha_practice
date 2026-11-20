@@ -45,6 +45,8 @@ urlpatterns = [
         views.session_seats_api,
         name="session_seats_api",
     ),
+
+    path("booking/<int:pk>/cancel/", views.cancel_booking_view, name="cancel_booking"),
 ]
 
 if settings.DEBUG:

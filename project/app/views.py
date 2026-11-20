@@ -594,3 +594,17 @@ def payment_view(request, pk):
         "is_paid": booking.status == "paid",
     }
     return render(request, "app/payment.html", context)
+
+@login_required
+def cancel_booking_view(request, pk):
+    booking = get_object_or_404(Booking, pk=pk, user=request.user)
+    if request.method == "POST" and booking.status in ["pending", "active"]:
+        with transaction.atomic():
+            booking.status = "cancelled"
+            booking.save(update_fields=["status"])
+            booking.items.filter(status="reserved").update(status="cancelled")
+        messages.success(
+            request,
+            f"Бронь #{booking.booking_code or booking.id} отменена, места освобождены.",
+        )
+    return redirect("profile")
