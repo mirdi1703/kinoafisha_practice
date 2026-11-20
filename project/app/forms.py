@@ -11,9 +11,11 @@ class UserRegisterForm(UserCreationForm):
     а также автоматически обрабатывает безопасное создание паролей.
     """
 
+    first_name = forms.CharField(max_length=150,required=True,label="Имя",)
+
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'email')
+        fields = ('username', 'email', 'first_name')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
