@@ -18,9 +18,9 @@
         </a>
 
         <button type="button" class="burger-btn" aria-label="Открыть меню" aria-expanded="false">
-        <span class="burger-line"></span>
-        <span class="burger-line"></span>
-        <span class="burger-line"></span>
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
+            <span class="burger-line"></span>
         </button>
 
         <nav class="nav">
@@ -31,6 +31,15 @@
     <main class="container">
         <div class="auth-card">
             <h1>Вход в систему</h1>
+
+            {% if messages %}
+                <div class="messages-list">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <form method="post" class="auth-form">
                 {% csrf_token %}
                 {{ form.as_p }}

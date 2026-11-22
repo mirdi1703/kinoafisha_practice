@@ -2,17 +2,20 @@ import base64
 from datetime import timedelta
 from io import BytesIO
 import uuid
+
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
+from django.core.cache import cache
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone
 import qrcode
-from django.contrib.admin.views.decorators import staff_member_required
+
 from .forms import ReviewForm, UserRegisterForm
 from .models import (
     Booking,
@@ -27,6 +30,22 @@ from .models import (
     Ticket,
     recalculate_movie_rating,
 )
+
+MAX_LOGIN_ATTEMPTS = 5
+LOCKOUT_SECONDS = 600
+
+
+def _get_client_ip(request):
+    forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.META.get("REMOTE_ADDR", "unknown")
+
+
+def _attempt_cache_key(request, username=""):
+    ip = _get_client_ip(request)
+    user_part = (username or "").strip().lower()
+    return f"login_attempts:{ip}:{user_part}"
 
 
 def movie_list_view(request):
@@ -60,7 +79,6 @@ def movie_list_view(request):
         "search_query": query,
     }
 
-    # Если запрос пришел через AJAX, возвращаем только HTML-фрагмент сетки карточек
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         html = render_to_string(
             "app/partials/movies_grid.html", context, request=request
@@ -68,18 +86,6 @@ def movie_list_view(request):
         return JsonResponse({"html": html})
 
     return render(request, "app/movie_list.html", context)
-
-
-def movie_detail_view(request, pk):
-    """
-    Представление детальной страницы фильма.
-    Отображает информацию о фильме, запланированные сеансы и опубликованные отзывы.
-    """
-    movie = get_object_or_404(Movie, pk=pk)
-    sessions = movie.sessions.filter(status="scheduled")
-    reviews = movie.reviews.filter(moderation_status="published")
-    context = {"movie": movie, "sessions": sessions, "reviews": reviews}
-    return render(request, "app/movie_detail.html", context)
 
 
 @login_required
@@ -96,8 +102,7 @@ def profile_view(request):
             booking.save(update_fields=["status"])
 
     bookings = (
-        user_bookings_qs
-        .select_related("session__movie", "session__hall")
+        user_bookings_qs.select_related("session__movie", "session__hall")
         .prefetch_related("items__seat", "tickets", "items")
         .order_by("-created_at")
     )
@@ -129,13 +134,63 @@ def register_view(request):
     return render(request, "app/register.html", {"form": form})
 
 
-class CustomLoginView(LoginView):
-    """
-    Класс авторизации пользователей в системе.
-    Наследуется от стандартного LoginView Django и указывает кастомный шаблон входа.
-    """
+class RateLimitedLoginView(LoginView):
+    """Вход в систему с ограничением числа неудачных попыток."""
 
     template_name = "app/login.html"
+
+    def _is_blocked(self, request, username=""):
+        key_user = _attempt_cache_key(request, username)
+        key_ip = _attempt_cache_key(request, "")
+        return max(cache.get(key_user, 0), cache.get(key_ip, 0)) >= MAX_LOGIN_ATTEMPTS
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == "POST":
+            username = request.POST.get("username", "")
+            if self._is_blocked(request, username):
+                messages.error(
+                    request,
+                    "Слишком много неудачных попыток входа. Повторите через 10 минут.",
+                )
+                form = self.get_form()
+                return self.render_to_response(self.get_context_data(form=form))
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+        username = (
+            form.cleaned_data.get("username")
+            or self.request.POST.get("username", "")
+        )
+        key_user = _attempt_cache_key(self.request, username)
+        key_ip = _attempt_cache_key(self.request, "")
+
+        attempts_user = cache.get(key_user, 0) + 1
+        attempts_ip = cache.get(key_ip, 0) + 1
+        cache.set(key_user, attempts_user, timeout=LOCKOUT_SECONDS)
+        cache.set(key_ip, attempts_ip, timeout=LOCKOUT_SECONDS)
+
+        current_attempts = max(attempts_user, attempts_ip)
+        if current_attempts >= MAX_LOGIN_ATTEMPTS:
+            messages.error(
+                self.request,
+                "Превышен лимит попыток входа. Вход временно заблокирован на 10 минут.",
+            )
+        else:
+            remaining = MAX_LOGIN_ATTEMPTS - current_attempts
+            messages.warning(
+                self.request,
+                f"Неверный логин или пароль. Осталось попыток: {remaining}.",
+            )
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        username = form.get_user().get_username()
+        cache.delete(_attempt_cache_key(self.request, username))
+        cache.delete(_attempt_cache_key(self.request, ""))
+        return super().form_valid(form)
+
+
+CustomLoginView = RateLimitedLoginView
 
 
 def movie_detail_view(request, pk):
@@ -597,6 +652,7 @@ def payment_view(request, pk):
         "is_paid": booking.status == "paid",
     }
     return render(request, "app/payment.html", context)
+
 
 @login_required
 def cancel_booking_view(request, pk):
