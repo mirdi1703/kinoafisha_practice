@@ -1,1 +1,253 @@
-[2026-11-21 18:35:19,315] ERROR app: Тестовая ошибка для проверки логирования
+[2026-11-24 00:15:35,513] ERROR app: Сбой транзакции при оплате брони #1
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 643, in payment_view
+    Ticket.objects.get_or_create(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        booking=booking,
+        ^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        },
+        ^^
+    )
+    ^
+  File "C:\Users\Chekhov\AppData\Local\Programs\Python\Python315\Lib\unittest\mock.py", line 1176, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Chekhov\AppData\Local\Programs\Python\Python315\Lib\unittest\mock.py", line 1180, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Chekhov\AppData\Local\Programs\Python\Python315\Lib\unittest\mock.py", line 1241, in _execute_mock_call
+    raise effect
+RuntimeError: Simulated DB crash mid-transaction
+[2026-11-24 00:18:22,073] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:18:22,088] ERROR django.server: "GET / HTTP/1.1" 500 145
+[2026-11-24 00:28:15,110] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:28:15,124] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:30:30,459] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:30:30,476] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:31:35,348] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:31:35,349] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:31:36,065] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:31:36,067] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:31:37,239] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:31:37,241] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:31:57,529] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:31:57,532] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:31:58,279] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:31:58,281] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:32:12,687] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:32:12,688] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:32:17,770] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:32:17,771] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:32:29,890] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:32:29,891] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:32:30,835] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:32:30,837] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:32:56,888] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:32:56,889] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:32:57,892] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:32:57,893] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:33:11,814] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:33:11,815] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:33:13,285] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:33:13,286] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:33:33,303] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:33:33,304] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:35:00,329] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:35:00,343] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:39:29,050] ERROR django.request: Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Chekhov\Desktop\kino\venv\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 58, in movie_list_view
+    raise RuntimeError
+RuntimeError
+[2026-11-24 00:39:29,051] ERROR django.server: "GET / HTTP/1.1" 500 2264
+[2026-11-24 00:52:29,018] ERROR app: Сбой транзакции при оплате брони #1
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 643, in payment_view
+    Ticket.objects.get_or_create(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        booking=booking,
+        ^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        },
+        ^^
+    )
+    ^
+  File "C:\Users\Chekhov\AppData\Local\Programs\Python\Python315\Lib\unittest\mock.py", line 1176, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Chekhov\AppData\Local\Programs\Python\Python315\Lib\unittest\mock.py", line 1180, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Chekhov\AppData\Local\Programs\Python\Python315\Lib\unittest\mock.py", line 1241, in _execute_mock_call
+    raise effect
+RuntimeError: Simulated DB crash mid-transaction
+[2026-11-24 01:42:43,006] ERROR app: Сбой транзакции при оплате брони #1
+Traceback (most recent call last):
+  File "C:\Users\Chekhov\Desktop\kino\project\app\views.py", line 643, in payment_view
+    Ticket.objects.get_or_create(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        booking=booking,
+        ^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        },
+        ^^
+    )
+    ^
+  File "C:\Users\Chekhov\AppData\Local\Programs\Python\Python315\Lib\unittest\mock.py", line 1176, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Chekhov\AppData\Local\Programs\Python\Python315\Lib\unittest\mock.py", line 1180, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Chekhov\AppData\Local\Programs\Python\Python315\Lib\unittest\mock.py", line 1241, in _execute_mock_call
+    raise effect
+RuntimeError: Simulated DB crash mid-transaction

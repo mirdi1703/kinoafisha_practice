@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Страница не найдена | Киноафиша Ульяновск</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+</head>
+<body>
+    <header class="header">
+        <a href="{% url 'movie_list' %}" class="logo-link">
+            <div class="logo">
+                <span class="logo-badge">KINO</span> Киноафиша Ульяновск
+            </div>
+        </a>
+        <nav class="nav" aria-label="Основная навигация">
+            <a href="{% url 'movie_list' %}">Главная</a>
+            <a href="{% url 'schedule' %}">Расписание</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="error-page-card">
+            <span class="error-code-badge">Ошибка 404</span>
+            <h1>Страница или запись не найдена</h1>
+            <p class="error-page-text">
+                Возможно, фильм уже снят с проката, сеанс завершился или в адресе страницы допущена опечатка.
+                Воспользуйтесь поиском по каталогу или перейдите в актуальное расписание.
+            </p>
+
+            <form action="{% url 'movie_list' %}" method="get" class="error-search-form">
+                <input type="text" name="q" placeholder="Поиск фильма по названию..." class="input">
+                <button type="submit" class="btn btn-primary">Найти фильм</button>
+            </form>
+
+            <div class="error-page-actions">
+                <a href="{% url 'movie_list' %}" class="btn btn-primary">На главную</a>
+                <a href="{% url 'schedule' %}" class="btn btn-secondary">К расписанию сеансов</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
+    </footer>
+</body>
+</html>

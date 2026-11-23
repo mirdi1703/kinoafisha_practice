@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 — Внутренняя ошибка сервера | Киноафиша Ульяновск</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <span class="logo-badge">KINO</span> Киноафиша Ульяновск
+            </div>
+        </a>
+        <nav class="nav" aria-label="Основная навигация">
+            <a href="/">Главная</a>
+            <a href="/schedule/">Расписание</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="error-page-card">
+            <span class="error-code-badge error-code-500">Ошибка 500</span>
+            <h1>Внутренняя ошибка сервера</h1>
+            <p class="error-page-text">
+                На сервере произошёл непредвиденный сбой при обработке запроса. Информация об ошибке уже записана
+                в технический журнал, а ваши данные и брони сохранены в целости. Попробуйте обновить страницу через минуту.
+            </p>
+
+            <form action="/" method="get" class="error-search-form">
+                <input type="text" name="q" placeholder="Перейти к поиску фильмов..." class="input">
+                <button type="submit" class="btn btn-secondary">Поиск</button>
+            </form>
+
+            <div class="error-page-actions">
+                <a href="/" class="btn btn-primary">Вернуться на главную</a>
+                <a href="/schedule/" class="btn btn-secondary">Открыть расписание</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Киноафиша Ульяновск. Все права защищены.</p>
+    </footer>
+</body>
+</html>

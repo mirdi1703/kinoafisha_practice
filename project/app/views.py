@@ -31,6 +31,12 @@ from .models import (
     recalculate_movie_rating,
 )
 
+import logging
+from django.core.exceptions import PermissionDenied
+from django.db import DatabaseError, transaction
+
+logger = logging.getLogger("app")
+
 MAX_LOGIN_ATTEMPTS = 5
 LOCKOUT_SECONDS = 600
 
@@ -243,7 +249,11 @@ def edit_review_view(request, pk):
     Представление для редактирования отзыва пользователя.
     После изменения переводит статус отзыва обратно на модерацию ('pending').
     """
-    review = get_object_or_404(Review, pk=pk, user=request.user)
+
+    review = get_object_or_404(Review, pk=pk)
+    if review.user != request.user:
+        logger.warning("Попытка доступа к чужому отзыву #%s пользователем %s", pk, request.user.username)
+        raise PermissionDenied("Вы можете управлять только собственными отзывами.")
 
     if request.method == "POST":
         form = ReviewForm(request.POST, instance=review)
@@ -390,13 +400,22 @@ def movies_view(request):
     return render(request, "app/movies.html", context)
 
 
-@staff_member_required
+@login_required
 def cashier_panel_view(request):
     """
     Панель кассира (доступна только персоналу).
     Позволяет проверять и гасить билеты по уникальному QR-коду / токену,
     а также осуществлять поиск билетов.
     """
+
+    if not (request.user.is_staff or getattr(request.user, "role", "") in ("cashier", "admin")):
+        logger.warning(
+            "Доступ запрещён в панель кассира: user=%s, path=%s",
+            request.user.username,
+            request.path,
+        )
+        raise PermissionDenied("Доступ в панель кассира разрешён только сотрудникам.")
+
     search_query = request.GET.get("q", "").strip()
     ticket = None
     error_message = None
@@ -615,22 +634,31 @@ def payment_view(request, pk):
         return redirect("profile")
 
     if request.method == "POST":
-        with transaction.atomic():
-            booking.status = "paid"
-            booking.save()
+        try:
+            with transaction.atomic():
+                booking.status = "paid"
+                booking.save(update_fields=["status"])
 
-            for item in booking.items.all():
-                Ticket.objects.get_or_create(
-                    booking=booking,
-                    booking_item=item,
-                    defaults={
-                        "session": booking.session,
-                        "seat": item.seat,
-                        "price": item.price_at_booking,
-                        "status": "valid",
-                        "qr_code": uuid.uuid4().hex[:16].upper(),
-                    },
-                )
+                for item in booking.items.all():
+                    Ticket.objects.get_or_create(
+                        booking=booking,
+                        booking_item=item,
+                        defaults={
+                            "session": booking.session,
+                            "seat": item.seat,
+                            "price": item.price_at_booking,
+                            "status": "valid",
+                            "qr_code": uuid.uuid4().hex[:16].upper(),
+                        },
+                    )
+        except Exception:
+            logger.exception("Сбой транзакции при оплате брони #%s", booking.pk)
+            messages.error(
+                request,
+                "Произошла ошибка при оформлении билетов. Средства не списаны, попробуйте ещё раз.",
+            )
+            return redirect("payment_page", pk=booking.pk)
+
         messages.success(request, "Оплата прошла успешно! Билеты оформлены.")
         return redirect("payment_page", pk=booking.pk)
 
@@ -656,7 +684,10 @@ def payment_view(request, pk):
 
 @login_required
 def cancel_booking_view(request, pk):
-    booking = get_object_or_404(Booking, pk=pk, user=request.user)
+    booking = get_object_or_404(Booking, pk=pk)
+    if booking.user != request.user:
+        logger.warning("Попытка доступа к чужой брони #%s пользователем %s", pk, request.user.username)
+        raise PermissionDenied("Эта бронь принадлежит другому пользователю.")
     if request.method == "POST" and booking.status in ["pending", "active"]:
         with transaction.atomic():
             booking.status = "cancelled"

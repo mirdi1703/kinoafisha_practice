@@ -111,7 +111,7 @@
                     </div>
                 </div>
             {% else %}
-                    <div id="review-form-wrapper" class="review-form-box" style="display: none;">
+                    <div id="review-form-wrapper" class="review-form-box" {% if not form.errors %}style="display: none;"{% endif %}>
                         <h3>Ваш отзыв о фильме «{{ movie.title }}»</h3>
                         <form method="post" class="review-form">
                             {% csrf_token %}
